@@ -37,7 +37,7 @@ function setRandomColor() {
 
 
 document.addEventListener("keydown", function(event) {
-  if (event.key.length === 1 && event.key.match(/[a-z]/i)) {
+  if (event.key.length === 1 && event.key.match(/[a-zöäü]/i)) {
     checkInput(event.key);
   }
 });
