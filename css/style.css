@@ -1,0 +1,27 @@
+/* css/style.css */
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 100% der Bildschirmhöhe nutzen */
+  margin: 0;
+}
+
+h2#Punkte {
+  font-size: 5em;
+  margin-bottom: 10px;
+}
+
+div#AnzeigeText {
+  font-size: 4em;
+}
+
+.info-icon {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 1000; /* Stellen Sie sicher, dass es über anderen Inhalten liegt */
+}
