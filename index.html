@@ -8,13 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-  <link rel="manifest" href="site.webmanifest">
-  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="apple-touch-icon" href="./icon.png">
   <!-- Place favicon.ico in the root directory -->
 
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="./css/normalize.css">
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/style.css">
 
 
 
@@ -25,13 +25,182 @@
   <h2 id="Punkte">0</h2>
   <div id="AnzeigeText">linke Hand</div>
 
-  <a href="https://sg.typewriter.ch/index.php?r=site/index" target="_blank" class="info-icon">
-    <img src="img/fragezeichen.svg" alt="Info">
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('infoModal')">&times;</span>
+      <img src="./img/infoBild.png" alt="Info">
+      <p>Drücke den verlangten Buchstaben. <br>
+        linke Hand: A S D F | rechte Hand: J K L ö</p>
+      <a href="https://sg.typewriter.ch/index.php?r=site/index" target="_blank">Website von Typewriter</a>
+    </div>
+  </div>
+
+  <div id="variantenModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('variantenModal')">&times;</span>
+      <h2>Wähle eine Variante aus:</h2>
+      <button onclick="setVariante(Varianten.LinkeHand)">Linke Hand</button>
+      <button onclick="setVariante(Varianten.RechteHand)">Rechte Hand</button>
+      <button onclick="setVariante(Varianten.BeideHaende)">Beide Hände</button>
+      <button onclick="setVariante(Varianten.BestimmteHand)">Bestimmte Hand</button>
+    </div>
+  </div>
+
+  <a href="#" onclick="openModal('variantenModal')" class="varianten-icon">
+    <img src="./img/varianten.svg" alt="varianten">
   </a>
 
-  <script src="js/vendor/modernizr-3.11.2.min.js"></script>
-  <script src="js/plugins.js"></script>
-  <script src="js/main.js"></script>
+  <a href="#" onclick="openModal('infoModal')" class="info-icon">
+    <img src="./img/info.svg" alt="Info">
+  </a>
+
+  <h3 id="Fehler">0</h3>
+
+  <script src="./js/vendor/modernizr-3.11.2.min.js"></script>
+  <script src="./js/plugins.js"></script>
+
+<script>
+
+  window.onclick = function(event) {
+    const infoModal = document.getElementById('infoModal');
+    if (event.target === infoModal) {
+      infoModal.style.display = 'none';
+    }
+    const variantenModal = document.getElementById('variantenModal');
+    if (event.target === variantenModal) {
+      variantenModal.style.display = 'none';
+    }
+  }
+
+  const colors = ["yellow", "green", "orange", "blue"];
+  const Varianten = {
+    LinkeHand: "linke Hand",
+    RechteHand: "rechte Hand",
+    BeideHaende: "beide Hände",
+    BestimmteHand: "bestimmte Hand"
+  }
+
+  let currentVariant = Varianten.BestimmteHand
+
+  const setVariante = (variante) => {
+    currentVariant = variante
+    setTask()
+    closeModal('variantenModal')
+  }
+
+  const openModal = (modal) => {
+    document.getElementById(modal).style.display = 'block';
+  }
+
+  const closeModal = (modal) => {
+    document.getElementById(modal).style.display = 'none';
+  }
+
+  const keysLeft = new Map();
+
+  keysLeft.set('yellow', "a");
+  keysLeft.set('green', "s");
+  keysLeft.set('orange', "d");
+  keysLeft.set('blue', "f");
+
+  const keysRight = new Map();
+
+  keysRight.set('yellow', "ö");
+  keysRight.set('green', "l");
+  keysRight.set('orange', "k");
+  keysRight.set('blue', "j");
+
+  let currentColor
+  let currentSide
+  let punkte = 0
+  let fehler = 0
+  const punkteAnzeige  = document.getElementById('Punkte');
+  const fehlerAnzeige  = document.getElementById('Fehler');
+  const anzeigeText  = document.getElementById('AnzeigeText');
+
+  document.addEventListener("DOMContentLoaded", setTask);
+
+  function setTask() {
+    switch (currentVariant) {
+      case Varianten.LinkeHand:
+        currentSide = 1;
+        anzeigeText.innerHTML = "linke Hand"
+        break
+      case Varianten.RechteHand:
+        currentSide = 0;
+        anzeigeText.innerHTML = "rechte Hand"
+        break
+      case Varianten.BestimmteHand:
+        currentSide = Math.floor(Math.random() * 2)
+        anzeigeText.innerHTML = currentSide ? "linke Hand" : "rechte Hand"
+        break
+      case Varianten.BeideHaende:
+        currentSide = 2
+        anzeigeText.innerHTML = "beide Hände"
+        break
+    }
+    setRandomColor()
+  }
+  // Funktion zum zufälligen Auswählen einer Farbe aus dem Array
+  function setRandomColor() {
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    currentColor = colors[randomIndex]
+    document.body.style.backgroundColor = currentColor
+  }
+
+
+  document.addEventListener("keydown", function(event) {
+    if (event.key.length === 1 && event.key.match(/[a-zöäü]/i)) {
+      if (currentVariant === Varianten.BeideHaende) {
+        checkInputBeideHaende(event.key)
+      } else checkInput(event.key);
+    }
+  });
+
+  function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
+
+  function checkInputBeideHaende(input) {
+    if (keysLeft.get(currentColor) === input || keysRight.get(currentColor) === input ) {
+      if (keysLeft.get(currentColor) === input && currentSide >= 1) {
+        currentSide--
+        currentSide--
+      }
+      if (keysRight.get(currentColor) === input && currentSide%2 === 0) {
+        currentSide--
+      }
+    } else {
+      punktAction()
+    }
+
+    if (currentSide < 0) fehlerAction()
+  }
+
+  function checkInput(input) {
+    const testKey = currentSide? keysLeft.get(currentColor) : keysRight.get(currentColor)
+    if (testKey === input) {
+      punktAction()
+    } else {
+      fehlerAction()
+    }
+  }
+
+  function punktAction() {
+    punkte++
+    punkteAnzeige.innerHTML = punkte.toString()
+    setTask()
+  }
+
+  function fehlerAction() {
+    fehler++
+    fehlerAnzeige.innerHTML = fehler.toString()
+    document.body.style.backgroundColor = "red"
+    delay(1000).then(() => document.body.style.backgroundColor = currentColor);
+  }
+
+
+</script>
 
 </body>
 
