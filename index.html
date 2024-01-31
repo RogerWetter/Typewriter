@@ -72,7 +72,12 @@
     }
   }
 
-  const colors = ["yellow", "green", "orange", "blue"];
+  const colors = {
+    yellow: "#e6ca0c",
+    green: "#46a70f",
+    orange: "#e3810f",
+    blue: "#4c98e6"
+  };
   const Varianten = {
     LinkeHand: "linke Hand",
     RechteHand: "rechte Hand",
@@ -98,17 +103,17 @@
 
   const keysLeft = new Map();
 
-  keysLeft.set('yellow', "a");
-  keysLeft.set('green', "s");
-  keysLeft.set('orange', "d");
-  keysLeft.set('blue', "f");
+  keysLeft.set(colors.yellow, "a");
+  keysLeft.set(colors.green, "s");
+  keysLeft.set(colors.orange, "d");
+  keysLeft.set(colors.blue, "f");
 
   const keysRight = new Map();
 
-  keysRight.set('yellow', "ö");
-  keysRight.set('green', "l");
-  keysRight.set('orange', "k");
-  keysRight.set('blue', "j");
+  keysRight.set(colors.yellow, "ö");
+  keysRight.set(colors.green, "l");
+  keysRight.set(colors.orange, "k");
+  keysRight.set(colors.blue, "j");
 
   let currentColor
   let currentSide
@@ -143,8 +148,8 @@
   }
   // Funktion zum zufälligen Auswählen einer Farbe aus dem Array
   function setRandomColor() {
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    currentColor = colors[randomIndex]
+    const randomIndex = Math.floor(Math.random() * Object.keys(colors).length);
+    currentColor = Object.values(colors)[randomIndex]
     document.body.style.backgroundColor = currentColor
   }
 
@@ -162,7 +167,7 @@
   }
 
   function checkInputBeideHaende(input) {
-    if (keysLeft.get(currentColor) === input || keysRight.get(currentColor) === input ) {
+    if (keysLeft.get(currentColor) === input || keysRight.get(currentColor) === input) {
       if (keysLeft.get(currentColor) === input && currentSide >= 1) {
         currentSide--
         currentSide--
@@ -171,10 +176,10 @@
         currentSide--
       }
     } else {
-      punktAction()
+      fehlerAction()
     }
 
-    if (currentSide < 0) fehlerAction()
+    if (currentSide < 0) punktAction()
   }
 
   function checkInput(input) {
